@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0
 pragma solidity 0.8.10;
 
-import {ICrossDomainMessenger} from '../dependencies/morph/interfaces/ICrossDomainMessenger.sol';
+import {IMorphMessenger} from '../dependencies/morph/interfaces/IMorphMessenger.sol';
 import {L2BridgeExecutor} from './L2BridgeExecutor.sol';
 
 /**
@@ -19,7 +19,7 @@ contract MorphBridgeExecutor is L2BridgeExecutor {
   modifier onlyEthereumGovernanceExecutor() override {
     if (
       msg.sender != L2_MORPH_MESSENGER ||
-      ICrossDomainMessenger(L2_MORPH_MESSENGER).xDomainMessageSender() != _ethereumGovernanceExecutor
+      IMorphMessenger(L2_MORPH_MESSENGER).xDomainMessageSender() != _ethereumGovernanceExecutor
     ) revert UnauthorizedEthereumExecutor();
     _;
   }

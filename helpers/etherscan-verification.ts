@@ -16,8 +16,7 @@ const unableVerifyError = 'Fail - Unable to verify';
 
 export const SUPPORTED_ETHERSCAN_NETWORKS = [
   'main',
-  'ropsten',
-  'kovan',
+  'sepolia',
   'holesky',
   'goerli',
   'matic',

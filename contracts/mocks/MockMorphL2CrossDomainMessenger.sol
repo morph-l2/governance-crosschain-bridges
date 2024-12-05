@@ -1,11 +1,11 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.10;
 
-import {ICrossDomainMessenger} from '../dependencies/morph/interfaces/ICrossDomainMessenger.sol';
+import {IMorphMessenger} from '../dependencies/morph/interfaces/IMorphMessenger.sol';
 
 import {MockMorphL1CrossDomainMessenger} from "./MockMorphL1CrossDomainMessenger.sol";
 
-contract MockMorphL2CrossDomainMessenger is ICrossDomainMessenger {
+contract MockMorphL2CrossDomainMessenger is IMorphMessenger {
   address private sender;
   address private l1Messenger;
 

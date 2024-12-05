@@ -17,8 +17,8 @@ task(
 ).setAction(async (_, hre) => {
   await hre.run('set-DRE');
 
-  if (DRE.network.name != eEthereumNetwork.sepolia && DRE.network.name != eEthereumNetwork.main) {
-    throw new Error('Only applicable on mainnet or kovan where morph L2 exist');
+  if (DRE.network.name != eEthereumNetwork.holesky && DRE.network.name != eEthereumNetwork.main) {
+    throw new Error('Only applicable on mainnet or holesky where morph L2 exist');
   }
 
   const GAS_LIMIT = 1500000;

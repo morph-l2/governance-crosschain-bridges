@@ -7,15 +7,20 @@ export type eNetwork =
   | ePolygonNetwork
   | eXDaiNetwork
   | eArbitrumNetwork
-  | eOptimismNetwork;
+  | eOptimismNetwork
+  | eMorphNetwork;
 
 export enum eEthereumNetwork {
+  kovan = 'kovan',
+  sepolia = 'sepolia',
+  ropsten = 'ropsten',
+  rinkeby = 'rinkeby',
+  holesky = 'holesky',
   goerli = 'goerli',
   main = 'main',
   coverage = 'coverage',
   hardhat = 'hardhat',
   tenderlyMain = 'tenderlyMain',
-  sepolia = 'sepolia',
 }
 
 export enum ePolygonNetwork {
@@ -34,16 +39,24 @@ export enum eArbitrumNetwork {
 
 export enum eOptimismNetwork {
   main = 'optimism',
-  testnet = 'optimisticSepolia',
+  testnet = 'optimism-testnet',
+}
+
+export enum eMorphNetwork {
+  morph = 'morph',
+  morphHolesky = 'morph-holesky',
 }
 
 export enum EthereumNetworkNames {
+  kovan = 'kovan',
+  ropsten = 'ropsten',
+  rinkeby = 'rinkeby',
+  holesky = 'holesky',
   goerli = 'goerli',
   main = 'main',
   matic = 'matic',
   mumbai = 'mumbai',
   xdai = 'xdai',
-  sepolia = 'sepolia',
 }
 
 export type tEthereumAddress = string;
@@ -53,7 +66,8 @@ export type iParamsPerNetwork<T> =
   | iPolygonParamsPerNetwork<T>
   | iXDaiParamsPerNetwork<T>
   | iArbitrumParamsPerNetwork<T>
-  | iOptimismParamsPerNetwork<T>;
+  | iOptimismParamsPerNetwork<T>
+  | iMorphParamsPerNetwork<T>;
 
 export interface iParamsPerNetworkAll<T>
   extends iEthereumParamsPerNetwork<T>,
@@ -62,7 +76,10 @@ export interface iParamsPerNetworkAll<T>
 
 export interface iEthereumParamsPerNetwork<eNetwork> {
   [eEthereumNetwork.coverage]: eNetwork;
-  [eEthereumNetwork.sepolia]: eNetwork;
+  [eEthereumNetwork.kovan]: eNetwork;
+  [eEthereumNetwork.ropsten]: eNetwork;
+  [eEthereumNetwork.rinkeby]: eNetwork;
+  [eEthereumNetwork.holesky]: eNetwork;
   [eEthereumNetwork.goerli]: eNetwork;
   [eEthereumNetwork.main]: eNetwork;
   [eEthereumNetwork.hardhat]: eNetwork;
@@ -86,6 +103,11 @@ export interface iArbitrumParamsPerNetwork<T> {
 export interface iOptimismParamsPerNetwork<T> {
   [eOptimismNetwork.main]: T;
   [eOptimismNetwork.testnet]: T;
+}
+
+export interface iMorphParamsPerNetwork<T> {
+  [eMorphNetwork.morph]: T;
+  [eMorphNetwork.morphHolesky]: T;
 }
 
 export interface ObjectString {

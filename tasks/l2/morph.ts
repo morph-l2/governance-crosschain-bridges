@@ -4,32 +4,32 @@ import { task } from 'hardhat/config';
 import { ADDRESSES, CONSTANTS } from '../../helpers/gov-constants';
 
 import { DRE } from '../../helpers/misc-utils';
-import { eEthereumNetwork, eOptimismNetwork } from '../../helpers/types';
+import { eEthereumNetwork, eMorphNetwork } from '../../helpers/types';
 import {
   Greeter__factory,
-  ICrossDomainMessenger__factory,
-  OptimismBridgeExecutor__factory,
+  IMorphMessenger__factory,
+  MorphBridgeExecutor__factory,
 } from '../../typechain';
 
 task(
-  'optimism:initiate-greeting',
-  'Queue a greeting in the governance executor on Optimism by transacting on L1'
+  'morph:initiate-greeting',
+  'Queue a greeting in the governance executor on Morph by transacting on L1'
 ).setAction(async (_, hre) => {
   await hre.run('set-DRE');
 
-  if (DRE.network.name != eEthereumNetwork.kovan && DRE.network.name != eEthereumNetwork.main) {
-    throw new Error('Only applicable on mainnet or kovan where optimism L2 exist');
+  if (DRE.network.name != eEthereumNetwork.sepolia && DRE.network.name != eEthereumNetwork.main) {
+    throw new Error('Only applicable on mainnet or kovan where morph L2 exist');
   }
 
   const GAS_LIMIT = 1500000;
   const MESSAGE = 'Miguel was also here';
 
-  let OVM_L1_MESSENGER = ADDRESSES['OVM_L1_MESSENGER_MAIN'];
-  if (DRE.network.name == eEthereumNetwork.kovan) {
-    OVM_L1_MESSENGER = ADDRESSES['OVM_L1_MESSENGER_KOVAN'];
+  let L1_MORPH_MESSENGER = ADDRESSES['L1_MORPH_MESSENGER'];
+  if (DRE.network.name == eEthereumNetwork.holesky) {
+    L1_MORPH_MESSENGER = ADDRESSES['L1_MORPH_MESSENGER_HOLESKY'];
   }
 
-  const l2 = DRE.companionNetworks['optimism'];
+  const l2 = DRE.companionNetworks['morph'];
 
   const { deployer: deployerAddress } = await DRE.getNamedAccounts();
   const deployer = await DRE.ethers.getSigner(deployerAddress);
@@ -37,19 +37,19 @@ task(
     `Deployer address: ${deployer.address} (${formatUnits(await deployer.getBalance())})`
   );
 
-  // Note, the contract is on the optimism network, but only used to encode so no issue
-  const optimisticGov = OptimismBridgeExecutor__factory.connect(
-    (await l2.deployments.get('OptimisticGov')).address,
+  // Note, the contract is on the morph network, but only used to encode so no issue
+  const morphGov = MorphBridgeExecutor__factory.connect(
+    (await l2.deployments.get('MorphGov')).address,
     deployer
   );
-  console.log(`Optimistic Gov at ${optimisticGov.address}`);
+  console.log(`Morph Gov at ${morphGov.address}`);
 
-  // Note, the contract is on the optimism network, but only used to encode so no issue
+  // Note, the contract is on the morph network, but only used to encode so no issue
   const greeter = Greeter__factory.connect((await l2.deployments.get('Greeter')).address, deployer);
   console.log(`Greeter at ${greeter.address}`);
 
-  const messenger = ICrossDomainMessenger__factory.connect(OVM_L1_MESSENGER, deployer);
-  console.log(`OVM_L1_MESSENGER at: ${messenger.address}`);
+  const messenger = IMorphMessenger__factory.connect(L1_MORPH_MESSENGER, deployer);
+  console.log(`L1_MORPH_MESSENGER at: ${messenger.address}`);
 
   const encodedGreeting = greeter.interface.encodeFunctionData('setMessage', [MESSAGE]);
 
@@ -59,7 +59,7 @@ task(
   const calldatas: string[] = [encodedGreeting];
   const withDelegatecalls: boolean[] = [false];
 
-  const encodedQueue = optimisticGov.interface.encodeFunctionData('queue', [
+  const encodedQueue = morphGov.interface.encodeFunctionData('queue', [
     targets,
     values,
     signatures,
@@ -67,17 +67,20 @@ task(
     withDelegatecalls,
   ]);
 
-  const tx = await messenger.sendMessage(optimisticGov.address, encodedQueue, GAS_LIMIT);
+  const tx = await messenger.sendMessage(morphGov.address, 0, encodedQueue, GAS_LIMIT);
   console.log(`Transaction initiated: ${tx.hash}`);
 });
 
-task('optimism:execute-greeting', '')
+task('morph:execute-greeting', '')
   .addParam('id', 'Id of the proposal to execute')
   .setAction(async (taskArg, hre) => {
     await hre.run('set-DRE');
 
-    if (DRE.network.name != eOptimismNetwork.main && DRE.network.name != eOptimismNetwork.testnet) {
-      throw new Error('Only applicable on optimism L2');
+    if (
+      DRE.network.name != eMorphNetwork.morph &&
+      DRE.network.name != eMorphNetwork.morphHolesky
+    ) {
+      throw new Error('Only applicable on morph L2');
     }
 
     const id = taskArg.id;
@@ -88,21 +91,21 @@ task('optimism:execute-greeting', '')
       `Deployer address: ${deployer.address} (${formatUnits(await deployer.getBalance())})`
     );
 
-    // Note, the contract is on the optimism network, but only used to encode so no issue
-    const optimisticGov = OptimismBridgeExecutor__factory.connect(
-      (await DRE.deployments.get('OptimisticGov')).address,
+    // Note, the contract is on the morph network, but only used to encode so no issue
+    const morphGov = MorphBridgeExecutor__factory.connect(
+      (await DRE.deployments.get('MorphGov')).address,
       deployer
     );
-    console.log(`Optimistic Gov at ${optimisticGov.address}`);
+    console.log(`Morph Gov at ${morphGov.address}`);
 
-    // Note, the contract is on the optimism network, but only used to encode so no issue
+    // Note, the contract is on the morph network, but only used to encode so no issue
     const greeter = Greeter__factory.connect(
       (await DRE.deployments.get('Greeter')).address,
       deployer
     );
     console.log(`Greeter at ${greeter.address}`);
 
-    const tx = await optimisticGov.execute(id);
+    const tx = await morphGov.execute(id);
 
     console.log(`Transaction initiated: ${tx.hash}`);
   });

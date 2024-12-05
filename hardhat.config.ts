@@ -23,6 +23,7 @@ import {
   eNetwork,
   eOptimismNetwork,
   ePolygonNetwork,
+  eMorphNetwork,
   eXDaiNetwork,
 } from './helpers/types';
 import { NETWORKS_RPC_URL } from './helper-hardhat-config';
@@ -46,6 +47,7 @@ const MAINNET_FORK = process.env.MAINNET_FORK === 'true';
 const FORKING_BLOCK_NUMBER = process.env.FORKING_BLOCK_NUMBER;
 const ARBISCAN_KEY = process.env.ARBISCAN_KEY || '';
 const OPTIMISTIC_ETHERSCAN_KEY = process.env.OPTIMISTIC_ETHERSCAN_KEY || '';
+const MORPHSCAN_KEY = process.env.MORPHSCAN_KEY || '';
 const TENDERLY_PROJECT = process.env.TENDERLY_PROJECT || '';
 const TENDERLY_USERNAME = process.env.TENDERLY_USERNAME || '';
 
@@ -111,26 +113,27 @@ const hardhatConfig: HardhatUserConfig = {
     apiKey: {
       optimisticEthereum: OPTIMISTIC_ETHERSCAN_KEY,
       arbitrumOne: ARBISCAN_KEY,
-      optimisticSepolia: OPTIMISTIC_ETHERSCAN_KEY,
+      [eMorphNetwork.morph]: MORPHSCAN_KEY,
+      [eMorphNetwork.morphHolesky]: MORPHSCAN_KEY,
     },
     customChains: [
-      {
-        network: 'sepolia',
-        chainId: 11155111,
-        urls: {
-          apiURL: 'https://api-sepolia.etherscan.io/api',
-          browserURL: 'https://sepolia.etherscan.io',
+        {
+          network: eMorphNetwork.morphHolesky,
+          chainId: 2810,
+          urls: {
+            apiURL: 'https://explorer-api-holesky.morphl2.io/api',
+            browserURL: 'https://explorer-holesky.morphl2.io/',
+          },
         },
-      },
-      {
-        network: 'optimisticSepolia',
-        chainId: 11155420,
-        urls: {
-          apiURL: 'https://api-sepolia-optimism.etherscan.io/api',
-          browserURL: 'https://sepolia-optimism.etherscan.io',
+        {
+          network: eMorphNetwork.morph,
+          chainId: 2818,
+          urls: {
+            apiURL: 'https://explorer-api.morphl2.io/api',
+            browserURL: 'https://explorer.morphl2.io/',
+          },
         },
-      },
-    ],
+      ],
   },
   tenderly: {
     project: TENDERLY_PROJECT,
@@ -141,14 +144,23 @@ const hardhatConfig: HardhatUserConfig = {
     timeout: 100000,
   },
   networks: {
-    sepolia: {
-      ...getCommonNetworkConfig(eEthereumNetwork.sepolia, 11155111),
+    kovan: {
+      ...getCommonNetworkConfig(eEthereumNetwork.kovan, 42),
       companionNetworks: {
         optimism: eOptimismNetwork.testnet,
+      },
+    },
+    ropsten: getCommonNetworkConfig(eEthereumNetwork.ropsten, 3),
+    rinkeby: {
+      ...getCommonNetworkConfig(eEthereumNetwork.rinkeby, 4),
+      companionNetworks: {
         arbitrum: eArbitrumNetwork.arbitrumTestnet,
       },
     },
     goerli: getCommonNetworkConfig(eEthereumNetwork.goerli, 5),
+    holesky: {
+      ...getCommonNetworkConfig(eEthereumNetwork.holesky, 17000),
+    },
     main: {
       ...getCommonNetworkConfig(eEthereumNetwork.main, 1),
       companionNetworks: {
@@ -164,16 +176,18 @@ const hardhatConfig: HardhatUserConfig = {
     [eArbitrumNetwork.arbitrumTestnet]: {
       ...getCommonNetworkConfig(eArbitrumNetwork.arbitrumTestnet, 421611),
       companionNetworks: {
-        l1: 'sepolia',
+        l1: 'rinkeby',
       },
     },
     [eOptimismNetwork.main]: getCommonNetworkConfig(eOptimismNetwork.main, 10),
     [eOptimismNetwork.testnet]: {
-      ...getCommonNetworkConfig(eOptimismNetwork.testnet, 11155420),
+      ...getCommonNetworkConfig(eOptimismNetwork.testnet, 69),
       companionNetworks: {
-        l1: 'sepolia',
+        l1: 'kovan',
       },
     },
+    [eMorphNetwork.morph]: getCommonNetworkConfig(eMorphNetwork.morph, 2818),
+    [eMorphNetwork.morphHolesky]: getCommonNetworkConfig(eMorphNetwork.morphHolesky, 2810),
     hardhat: {
       accounts: accounts.map(({ secretKey, balance }: { secretKey: string; balance: string }) => ({
         privateKey: secretKey,

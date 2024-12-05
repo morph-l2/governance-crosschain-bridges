@@ -15,7 +15,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   } else {
     await deploy('ArbitrumGov', {
       args: [
-        ADDRESSES['ETHEREUM_GOV_EXECUTOR_SEPOLIA'],
+        ADDRESSES['ETHEREUM_GOV_EXECUTOR'],
         CONSTANTS['DELAY'],
         CONSTANTS['GRACE_PERIOD'],
         CONSTANTS['MIN_DELAY'],

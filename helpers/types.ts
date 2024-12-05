@@ -7,9 +7,11 @@ export type eNetwork =
   | ePolygonNetwork
   | eXDaiNetwork
   | eArbitrumNetwork
-  | eOptimismNetwork;
+  | eOptimismNetwork
+  | eMorphNetwork;
 
 export enum eEthereumNetwork {
+  holesky = 'holesky',
   goerli = 'goerli',
   main = 'main',
   coverage = 'coverage',
@@ -37,7 +39,13 @@ export enum eOptimismNetwork {
   testnet = 'optimisticSepolia',
 }
 
+export enum eMorphNetwork {
+  morph = 'morph',
+  morphHolesky = 'morph-holesky',
+}
+
 export enum EthereumNetworkNames {
+  holesky = 'holesky',
   goerli = 'goerli',
   main = 'main',
   matic = 'matic',
@@ -53,15 +61,17 @@ export type iParamsPerNetwork<T> =
   | iPolygonParamsPerNetwork<T>
   | iXDaiParamsPerNetwork<T>
   | iArbitrumParamsPerNetwork<T>
-  | iOptimismParamsPerNetwork<T>;
+  | iOptimismParamsPerNetwork<T>
+  | iMorphParamsPerNetwork<T>;
 
 export interface iParamsPerNetworkAll<T>
-  extends iEthereumParamsPerNetwork<T>,
-    iPolygonParamsPerNetwork<T>,
-    iXDaiParamsPerNetwork<T> {}
+extends iEthereumParamsPerNetwork<T>,
+   iPolygonParamsPerNetwork<T>,
+   iXDaiParamsPerNetwork<T> {}
 
 export interface iEthereumParamsPerNetwork<eNetwork> {
   [eEthereumNetwork.coverage]: eNetwork;
+  [eEthereumNetwork.holesky]: eNetwork;
   [eEthereumNetwork.sepolia]: eNetwork;
   [eEthereumNetwork.goerli]: eNetwork;
   [eEthereumNetwork.main]: eNetwork;
@@ -86,6 +96,11 @@ export interface iArbitrumParamsPerNetwork<T> {
 export interface iOptimismParamsPerNetwork<T> {
   [eOptimismNetwork.main]: T;
   [eOptimismNetwork.testnet]: T;
+}
+
+export interface iMorphParamsPerNetwork<T> {
+  [eMorphNetwork.morph]: T;
+  [eMorphNetwork.morphHolesky]: T;
 }
 
 export interface ObjectString {

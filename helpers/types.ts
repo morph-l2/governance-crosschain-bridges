@@ -65,9 +65,9 @@ export type iParamsPerNetwork<T> =
   | iMorphParamsPerNetwork<T>;
 
 export interface iParamsPerNetworkAll<T>
-    extends iEthereumParamsPerNetwork<T>,
-        iPolygonParamsPerNetwork<T>,
-        iXDaiParamsPerNetwork<T> {}
+extends iEthereumParamsPerNetwork<T>,
+   iPolygonParamsPerNetwork<T>,
+   iXDaiParamsPerNetwork<T> {}
 
 export interface iEthereumParamsPerNetwork<eNetwork> {
   [eEthereumNetwork.coverage]: eNetwork;

@@ -74,7 +74,7 @@ task(
   await hre.run('set-DRE');
 
   if (DRE.network.name != eEthereumNetwork.sepolia && DRE.network.name != eEthereumNetwork.main) {
-      throw new Error('Only applicable on mainnet or sepolia where arbitrum L2 exist');
+    throw new Error('Only applicable on mainnet or sepolia where arbitrum L2 exist');
   }
 
   const MESSAGE = 'Miguel was also here ;)';

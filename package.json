@@ -37,7 +37,7 @@
     "deploy:optimism:mainnet": "hardhat --network optimism deploy --tags 'OptimisticGov'",
     "deploy:arbitrum:testnet": "hardhat --network arbitrum-testnet deploy --tags 'ArbitrumGov'",
     "deploy:arbitrum:mainnet": "hardhat --network arbitrum deploy --tags 'ArbitrumGov'",
-    "deploy:morph:sepolia": "hardhat --network morph-holesky deploy --tags 'MorphGov'",
+    "deploy:morph:holesky": "hardhat --network morph-holesky deploy --tags 'MorphGov'",
     "deploy:morph:mainnet": "hardhat --network morph deploy --tags 'MorphGov'"
   },
   "devDependencies": {

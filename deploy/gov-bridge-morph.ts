@@ -4,6 +4,7 @@ import { ADDRESSES, CONSTANTS } from '../helpers/gov-constants';
 import { eMorphNetwork } from '../helpers/types';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+  console.log("deploy morph gov")
   const { deployments, getNamedAccounts } = hre;
   const { deploy, log } = deployments;
   const { deployer } = await getNamedAccounts();

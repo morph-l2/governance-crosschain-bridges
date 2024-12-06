@@ -32,11 +32,18 @@ import {
   PolygonBridgeExecutor,
   ArbitrumBridgeExecutor,
   OptimismBridgeExecutor,
+  MorphBridgeExecutor,
   MockOvmL1CrossDomainMessenger,
   MockOvmL2CrossDomainMessenger,
   MockInbox__factory,
   MockInbox,
+  MockMorphL1CrossDomainMessenger,
+  MockMorphL2CrossDomainMessenger,
 } from '../../typechain';
+import {
+  deployMorphBridgeExecutor,
+  deployMorphMessengers,
+} from '../../helpers/morph-contract-getters';
 
 chai.use(solidity);
 
@@ -84,6 +91,9 @@ export interface TestEnv {
   optimismL2Messenger: MockOvmL2CrossDomainMessenger;
   arbitrumBridgeExecutor: ArbitrumBridgeExecutor;
   optimismBridgeExecutor: OptimismBridgeExecutor;
+  morphBridgeExecutor: MorphBridgeExecutor;
+  l1MorphMessenger: MockMorphL1CrossDomainMessenger;
+  l2MorphMessenger: MockMorphL2CrossDomainMessenger;
   proposalActions: ProposalActions[];
 }
 
@@ -206,12 +216,34 @@ const deployOptimismBridgeContracts = async (): Promise<void> => {
   );
 };
 
+const deployMorphBridgeContracts = async (): Promise<void> => {
+  const { aaveGovOwner } = testEnv;
+
+  // deploy morph messengers
+  const messengers = await deployMorphMessengers(aaveGovOwner.signer);
+  testEnv.l1MorphMessenger = messengers[0];
+  testEnv.l2MorphMessenger = messengers[1];
+
+  // deploy morph executor
+  testEnv.morphBridgeExecutor = await deployMorphBridgeExecutor(
+    testEnv.l2MorphMessenger.address,
+    testEnv.shortExecutor.address,
+    BigNumber.from(60),
+    BigNumber.from(1000),
+    BigNumber.from(15),
+    BigNumber.from(500),
+    aaveGovOwner.address,
+    aaveGovOwner.signer
+  );
+};
+
 export const setupTestEnvironment = async (): Promise<void> => {
   await setUpSigners();
   await createGovernanceContracts();
   await deployPolygonBridgeContracts();
   await deployArbitrumBridgeContracts();
   await deployOptimismBridgeContracts();
+  await deployMorphBridgeContracts();
 };
 
 export async function makeSuite(

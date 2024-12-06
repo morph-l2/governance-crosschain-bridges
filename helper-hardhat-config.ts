@@ -4,6 +4,7 @@ import {
   eOptimismNetwork,
   ePolygonNetwork,
   eXDaiNetwork,
+  eMorphNetwork,
   iParamsPerNetwork,
 } from './helpers/types';
 
@@ -12,9 +13,12 @@ const ALCHEMY_KEY = process.env.ALCHEMY_KEY || '';
 const TENDERLY_FORK = process.env.TENDERLY_FORK || '';
 
 export const NETWORKS_RPC_URL: iParamsPerNetwork<string> = {
-    [eEthereumNetwork.sepolia]: ALCHEMY_KEY
-    ? `https://eth-sepolia.alchemyapi.io/v2/${ALCHEMY_KEY}`
-    : `https://sepolia.infura.io/v3/${INFURA_KEY}`,
+  [eEthereumNetwork.sepolia]: ALCHEMY_KEY
+      ? `https://eth-sepolia.alchemyapi.io/v2/${ALCHEMY_KEY}`
+      : `https://sepolia.infura.io/v3/${INFURA_KEY}`,
+  [eEthereumNetwork.holesky]: ALCHEMY_KEY
+      ? `https://eth-holesky.alchemyapi.io/v2/${ALCHEMY_KEY}`
+      : `https://holesky.infura.io/v3/${INFURA_KEY}`,
   [eEthereumNetwork.goerli]: ALCHEMY_KEY
     ? `https://eth-goerli.alchemyapi.io/v2/${ALCHEMY_KEY}`
     : `https://goerli.infura.io/v3/${INFURA_KEY}`,
@@ -31,4 +35,6 @@ export const NETWORKS_RPC_URL: iParamsPerNetwork<string> = {
   [eArbitrumNetwork.arbitrumTestnet]: `https://sepolia-rollup.arbitrum.io/rpc`,
   [eOptimismNetwork.main]: `https://opt-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
   [eOptimismNetwork.testnet]: "https://sepolia.optimism.io",
+  [eMorphNetwork.morph]: "https://rpc.morphl2.io",
+  [eMorphNetwork.morphHolesky]: "https://rpc-holesky.morphl2.io",
 };

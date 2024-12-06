@@ -13,7 +13,7 @@
 
 # Aave Governance Cross-Chain Bridges
 
-This repository contains smart contracts and related code for Aave cross-chain bridge executors. This is intended to extend Aave Governance on Ethereum to other networks. This repository currently contains contracts to support bridging to Polygon, Arbitrum and Optimism.
+This repository contains smart contracts and related code for Aave cross-chain bridge executors. This is intended to extend Aave Governance on Ethereum to other networks. This repository currently contains contracts to support bridging to Polygon, Arbitrum, Optimism and Morph.
 
 The core contract is the `BridgeExecutorBase`, an abstract contract that contains the logic to facilitate the queueing, delay, and execution of sets of actions on downstream networks. This base contract needs to be extended with the functionality required for cross-chain transactions on a specific downstream network.
 
@@ -219,6 +219,55 @@ Therefore, the `msg.sender` of the cross-chain transaction on Optimism is the OV
 
 - `ovmL2CrossDomainMessenger` - the address of the OVM L2 Cross Domain Messenger contract
 - `ethereumGovernanceExecutor` - the address that will have permission to queue ActionSets. This should be the Aave Governance Executor.
+- `delay` - the time required to pass after the ActionsSet is queued, before execution
+- `gracePeriod` - once execution time passes, you can execute this until the grace period ends
+- `minimumDelay` - minimum allowed delay
+- `maximumDelay` - maximum allowed delay
+- `guardian` - the admin address of this contract with the permission to cancel ActionsSets
+
+## Morph Governance Bridge
+
+### Morph Governance Bridge Architecture
+
+Additional documentation around the Morph Bridging setup can be found at the links below:
+
+- [Morph Docs `L1 and L2 Bridging`](https://docs.morphl2.io/docs/how-morph-works/general-protocol-design/communicate-between-morph-and-ethereum)
+
+### Morph Bridge Contracts Functionality
+
+After going through the Lido governance, the proposal payload will be a call to the following function in the L1 Morph Messenger contract on Ethereum:
+
+```solidity
+/// @notice Send cross chain message from L1 to L2 or L2 to L1.
+/// @param target The address of account who receive the message.
+/// @param value The amount of ether passed when call target contract.
+/// @param message The content of the message.
+/// @param gasLimit Gas limit required to complete the message relay on corresponding chain.
+function sendMessage(
+  address target,
+  uint256 value,
+  bytes calldata message,
+  uint256 gasLimit
+) external payable;
+
+```
+
+From the function above, the `target` is the contract that will be called on Morph (in this case it is the `MorphBridgeExecutor` contract). The `value` is the amount of ether passing to target contract while call, and should be zero in our case. The `message` is the encoded data for the cross-chain transaction: the encoded data for `queue(targets, values, signatures, calldatas, withDelegatecalls)`. The `gasLimit` field pertain to gas management on Morph and should be defined per Morph documentation.
+
+When this transaction is sent cross-chain, the `msg.sender` that sends the message to the Morph Messenger is stored at the L2 Morph Messenger and queryable using the following function:
+
+```solidity
+/// @notice Return the sender of a cross domain message.
+function xDomainMessageSender() external view returns (address);
+
+```
+
+Therefore, the `msg.sender` of the cross-chain transaction on Morph is the L2 Morph Messenger contract, and the L1 sender is the Lido Governance Executor contract. For this reason, the Lido Governance Executor contract address should be provided to the `MorphBridgeExecutor` contract in the constructor. This address will be saved and used to permit the queue function so that only calls from this address can successfully queue the ActionsSet in the `BridgeExecutorBase`.
+
+### Deploying the MorphBridgeExecutor
+
+- `l2CrossDomainMessenger` - the address of the L2 CrossDomainMessenger contract
+- `ethereumGovernanceExecutor` - the address that will have permission to queue ActionSets. This should be the Lido Governance Executor.
 - `delay` - the time required to pass after the ActionsSet is queued, before execution
 - `gracePeriod` - once execution time passes, you can execute this until the grace period ends
 - `minimumDelay` - minimum allowed delay
